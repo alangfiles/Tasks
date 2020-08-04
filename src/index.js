@@ -6,13 +6,16 @@ import React from "react";
 import ReactDOM from "react-dom";
 import initialData from "./initial-data";
 import styled from "styled-components";
+import { useState } from "react";
 
 const Container = styled.div`
   display: flex;
 `;
 
-class App extends React.Component {
-  onDragEnd = (result) => {
+const App = (props) => {
+  const [data, setData] = useState(initialData);
+
+  const onDragEnd = (result) => {
     document.body.style.color = "inherit";
     const { destination, source, draggableId } = result;
 
@@ -25,74 +28,69 @@ class App extends React.Component {
       return;
     }
 
-    const start = this.state.columns[source.droppableId];
-    const finish = this.state.columns[destination.droppableId];
+    const startingColumn = data.columns[source.droppableId];
+    const endingColumn = data.columns[destination.droppableId];
 
-    if (start === finish) {
-      const newTaskIds = Array.from(start.taskIds);
+    if (startingColumn === endingColumn) {
+      const newTaskIds = Array.from(startingColumn.taskIds);
       newTaskIds.splice(source.index, 1);
       newTaskIds.splice(destination.index, 0, draggableId);
 
-      const newColumn = { ...start, taskIds: newTaskIds };
+      const newColumn = { ...startingColumn, taskIds: newTaskIds };
 
-      const newState = {
-        ...this.state,
+      const newData = {
+        ...data,
         columns: {
-          ...this.state.columns,
+          ...data.columns,
           [newColumn.id]: newColumn,
         },
       };
 
-      this.setState(newState);
+      setData(newData);
       return;
     }
 
     //moving from one list to another
-    const startTaskIds = Array.from(start.taskIds);
+    const startTaskIds = Array.from(startingColumn.taskIds);
     startTaskIds.splice(source.index, 1);
     const newStart = {
-      ...start,
+      ...startingColumn,
       taskIds: startTaskIds,
     };
 
-    const finishTaskIds = Array.from(finish.taskIds);
+    const finishTaskIds = Array.from(endingColumn.taskIds);
     finishTaskIds.splice(destination.index, 0, draggableId);
 
     const newFinish = {
-      ...finish,
+      ...endingColumn,
       taskIds: finishTaskIds,
     };
 
-    const newState = {
-      ...this.state,
+    const newData = {
+      ...data,
       columns: {
-        ...this.state.columns,
+        ...data.columns,
         [newStart.id]: newStart,
         [newFinish.id]: newFinish,
       },
     };
 
-    this.setState(newState);
+    setData(newData);
   };
 
-  state = initialData;
-  render() {
-    return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Container>
-          {this.state.columnOrder.map((columnId) => {
-            const column = this.state.columns[columnId];
-            const tasks = column.taskIds.map(
-              (taskId) => this.state.tasks[taskId]
-            );
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Container>
+        {data.columnOrder.map((columnId) => {
+          const column = data.columns[columnId];
+          const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
 
-            return <Column key={column.id} column={column} tasks={tasks} />;
-          })}
-        </Container>
-      </DragDropContext>
-    );
-  }
-}
+          return <Column key={column.id} column={column} tasks={tasks} />;
+        })}
+      </Container>
+    </DragDropContext>
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
