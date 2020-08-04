@@ -12,8 +12,51 @@ const Container = styled.div`
   display: flex;
 `;
 
+const getData = () => {
+  const data =
+    (localStorage.getItem("data") &&
+      JSON.parse(localStorage.getItem("data"))) ||
+    initialData;
+
+  return data;
+};
+
+const saveData = (data) => {
+  localStorage.setItem("data", JSON.stringify(data));
+};
+
 const App = (props) => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState(getData());
+
+  const addTask = () => {
+    const newTaskContent = prompt("Add Task");
+
+    if (newTaskContent) {
+      const randomId = `task-${Math.random()}`;
+      const newTaskObj = {};
+      newTaskObj[`${randomId}`] = { id: randomId, content: newTaskContent };
+
+      const newColumn = {
+        ...data.columns["column-1"],
+        taskIds: [...data.columns["column-1"].taskIds, randomId],
+      };
+
+      const newData = {
+        ...data,
+        tasks: {
+          ...data.tasks,
+          ...newTaskObj,
+        },
+        columns: {
+          ...data.columns,
+          ["column-1"]: newColumn,
+        },
+      };
+
+      setData(newData);
+      saveData(newData);
+    }
+  };
 
   const onDragEnd = (result) => {
     document.body.style.color = "inherit";
@@ -47,6 +90,7 @@ const App = (props) => {
       };
 
       setData(newData);
+      saveData(newData);
       return;
     }
 
@@ -76,19 +120,23 @@ const App = (props) => {
     };
 
     setData(newData);
+    saveData(newData);
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Container>
-        {data.columnOrder.map((columnId) => {
-          const column = data.columns[columnId];
-          const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
+    <React.Fragment>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Container>
+          {data.columnOrder.map((columnId) => {
+            const column = data.columns[columnId];
+            const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
 
-          return <Column key={column.id} column={column} tasks={tasks} />;
-        })}
-      </Container>
-    </DragDropContext>
+            return <Column key={column.id} column={column} tasks={tasks} />;
+          })}
+        </Container>
+      </DragDropContext>
+      <button onClick={addTask}>Add Task</button>
+    </React.Fragment>
   );
 };
 
