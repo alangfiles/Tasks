@@ -6,23 +6,23 @@ const initialData = {
     "task-4": { id: "task-4", content: "Repeat" },
   },
   columns: {
-    "column-1": {
-      id: "column-1",
+    "to-do-column": {
+      id: "to-do-column",
       title: "To Do",
       taskIds: ["task-1", "task-2", "task-3", "task-4"],
     },
-    "column-2": {
-      id: "column-2",
+    "in-progress-column": {
+      id: "in-progress-column",
       title: "In progress",
       taskIds: [],
     },
-    "column-3": {
-      id: "column-3",
+    "done-column": {
+      id: "done-column",
       title: "Done",
       taskIds: [],
     },
   },
-  columnOrder: ["column-1", "column-2", "column-3"],
+  columnOrder: ["to-do-column", "in-progress-column", "done-column"],
 };
 
 export default initialData;

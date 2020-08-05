@@ -37,8 +37,8 @@ const App = (props) => {
       newTaskObj[`${randomId}`] = { id: randomId, content: newTaskContent };
 
       const newColumn = {
-        ...data.columns["column-1"],
-        taskIds: [...data.columns["column-1"].taskIds, randomId],
+        ...data.columns["to-do-column"],
+        taskIds: [...data.columns["to-do-column"].taskIds, randomId],
       };
 
       const newData = {
@@ -49,7 +49,7 @@ const App = (props) => {
         },
         columns: {
           ...data.columns,
-          ["column-1"]: newColumn,
+          ["to-do-column"]: newColumn,
         },
       };
 
